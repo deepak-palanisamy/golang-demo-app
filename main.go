@@ -26,13 +26,13 @@ type CronExpression struct {
 type EcsFargateTaskDetail struct {
 	// cpuArchitecture string
 	// os              string
-	Cpu          float64
-	MemoryInMiB  float64
-	ClusterName  string
-	ClusterArn   string
-	DefaultVpc   bool
-	TaskPolicies iam.PolicyDocument
-	Container
+	Cpu             float64
+	MemoryInMiB     float64
+	ClusterName     string
+	ClusterArn      string
+	DefaultVpc      bool
+	TaskPolicies    iam.PolicyDocument
+	ContainerDetail Container
 	// Vpc         struct {
 	// 	id                        string
 	// 	cidr                      string
