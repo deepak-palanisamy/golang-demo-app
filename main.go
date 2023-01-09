@@ -32,6 +32,7 @@ type EcsFargateTaskDetail struct {
 	ClusterArn   string
 	DefaultVpc   bool
 	TaskPolicies iam.PolicyDocument
+	Container
 	// Vpc         struct {
 	// 	id                        string
 	// 	cidr                      string
@@ -40,13 +41,14 @@ type EcsFargateTaskDetail struct {
 	// 	publicSubnetRouteTableIds []string
 	// }
 
-	Container struct {
-		Name                 string
-		IsEssential          bool
-		EecrImageNameWithTag string
-		LogPrefix            string
-		EnvironmentVariable  map[string]string
-	}
+}
+
+type Container struct {
+	Name                 string
+	IsEssential          bool
+	EecrImageNameWithTag string
+	LogPrefix            string
+	EnvironmentVariable  map[string]string
 }
 
 type CronEcsFargateTaskProps struct {
