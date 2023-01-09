@@ -16,21 +16,22 @@ import (
 )
 
 type CronExpression struct {
-	minute string
-	hour   string
-	day    string
-	month  string
-	year   string
+	Minute string
+	Hour   string
+	Day    string
+	Month  string
+	Year   string
 }
 
 type EcsFargateTaskDetail struct {
 	// cpuArchitecture string
 	// os              string
-	cpu         float64
-	memoryInMiB float64
-	clusterName string
-	clusterArn  string
-	defaultVpc  bool
+	Cpu          float64
+	MemoryInMiB  float64
+	ClusterName  string
+	ClusterArn   string
+	DefaultVpc   bool
+	TaskPolicies iam.PolicyDocument
 	// Vpc         struct {
 	// 	id                        string
 	// 	cidr                      string
@@ -40,14 +41,12 @@ type EcsFargateTaskDetail struct {
 	// }
 
 	Container struct {
-		name                string
-		isEssential         bool
-		ecrImageNameWithTag string
-		logPrefix           string
-		environmentVariable map[string]string
+		Name                 string
+		IsEssential          bool
+		EecrImageNameWithTag string
+		LogPrefix            string
+		EnvironmentVariable  map[string]string
 	}
-
-	policies iam.PolicyDocument
 }
 
 type CronEcsFargateTaskProps struct {
@@ -71,13 +70,13 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 	taskRole := iam.NewRole(this, jsii.String("TaskRole"), &iam.RoleProps{
 		AssumedBy: iam.NewServicePrincipal(jsii.String("ecs-tasks."+*awscdk.Aws_URL_SUFFIX()), nil),
 		InlinePolicies: &map[string]iam.PolicyDocument{
-			*jsii.String("DefaultPolicy"): props.policies,
+			*jsii.String("DefaultPolicy"): props.TaskPolicies,
 		},
 	})
 
 	fargateTaskDef := ecs.NewFargateTaskDefinition(this, jsii.String("EcsFargateTaskDef"), &ecs.FargateTaskDefinitionProps{
-		Cpu:            jsii.Number(props.cpu),
-		MemoryLimitMiB: jsii.Number(float64(props.memoryInMiB)),
+		Cpu:            jsii.Number(props.Cpu),
+		MemoryLimitMiB: jsii.Number(float64(props.MemoryInMiB)),
 		RuntimePlatform: &ecs.RuntimePlatform{
 			CpuArchitecture:       ecs.CpuArchitecture_X86_64,
 			OperatingSystemFamily: ecs.OperatingSystemFamily_LINUX,
@@ -86,14 +85,14 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 	})
 
 	logGroup := logs.LogGroup_FromLogGroupArn(this, jsii.String("LogGroup"), jsii.String(props.LogGroupArn))
-	ecrImageNameTagSplit := strings.Split(props.Container.ecrImageNameWithTag, ":")
+	ecrImageNameTagSplit := strings.Split(props.Container.EecrImageNameWithTag, ":")
 	envVars := make(map[string]*string)
-	for key, value := range props.Container.environmentVariable {
+	for key, value := range props.Container.EnvironmentVariable {
 		envVars[key] = jsii.String(value)
 	}
 	ecs.NewContainerDefinition(this, jsii.String("ContainerDef"), &ecs.ContainerDefinitionProps{
-		ContainerName: &props.Container.name,
-		Essential:     jsii.Bool(props.Container.isEssential),
+		ContainerName: &props.Container.Name,
+		Essential:     jsii.Bool(props.Container.IsEssential),
 		Image: ecs.AssetImage_FromEcrRepository(
 			ecr.Repository_FromRepositoryName(this, jsii.String("EcrRepo"), jsii.String(ecrImageNameTagSplit[0])), jsii.String(ecrImageNameTagSplit[1])),
 		TaskDefinition: fargateTaskDef,
@@ -107,18 +106,18 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 		Enabled: jsii.Bool(true),
 		Schedule: events.Schedule_Cron(
 			&events.CronOptions{
-				Minute: &props.minute,
-				Hour:   &props.hour,
-				Day:    &props.day,
-				Month:  &props.month,
-				Year:   &props.year,
+				Minute: &props.Minute,
+				Hour:   &props.Hour,
+				Day:    &props.Day,
+				Month:  &props.Month,
+				Year:   &props.Year,
 			},
 		),
 		Targets: &[]events.IRuleTarget{
 			eventstargets.NewEcsTask(&eventstargets.EcsTaskProps{
 				Cluster: ecs.Cluster_FromClusterAttributes(this,
 					jsii.String("EcsTaskCluster"), &ecs.ClusterAttributes{
-						ClusterName: jsii.String(props.clusterName),
+						ClusterName: jsii.String(props.ClusterName),
 						Vpc: ec2.Vpc_FromLookup(this, jsii.String("ClusterVpc"), &ec2.VpcLookupOptions{
 							IsDefault: jsii.Bool(true),
 						}),
