@@ -126,6 +126,10 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 							IsDefault: jsii.Bool(true),
 						}),
 					}),
+				SubnetSelection: &ec2.SubnetSelection{
+					SubnetType: ec2.SubnetType_PUBLIC,
+					OnePerAz:   jsii.Bool(true),
+				},
 				TaskDefinition: fargateTaskDef,
 			}),
 		},
