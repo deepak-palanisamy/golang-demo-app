@@ -99,7 +99,8 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 			ecr.Repository_FromRepositoryName(this, jsii.String("EcrRepo"), jsii.String(ecrImageNameTagSplit[0])), jsii.String(ecrImageNameTagSplit[1])),
 		TaskDefinition: fargateTaskDef,
 		Logging: ecs.AwsLogDriver_AwsLogs(&ecs.AwsLogDriverProps{
-			LogGroup: logGroup,
+			LogGroup:     logGroup,
+			StreamPrefix: &props.ContainerDetail.LogPrefix,
 		}),
 		Environment: &envVars,
 	})
