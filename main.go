@@ -126,6 +126,7 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 							IsDefault: jsii.Bool(true),
 						}),
 					}),
+				TaskDefinition: fargateTaskDef,
 			}),
 		},
 	})
