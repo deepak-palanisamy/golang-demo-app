@@ -87,14 +87,14 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 	})
 
 	logGroup := logs.LogGroup_FromLogGroupArn(this, jsii.String("LogGroup"), jsii.String(props.LogGroupArn))
-	ecrImageNameTagSplit := strings.Split(props.Container.EecrImageNameWithTag, ":")
+	ecrImageNameTagSplit := strings.Split(props.ContainerDetail.EecrImageNameWithTag, ":")
 	envVars := make(map[string]*string)
-	for key, value := range props.Container.EnvironmentVariable {
+	for key, value := range props.ContainerDetail.EnvironmentVariable {
 		envVars[key] = jsii.String(value)
 	}
 	ecs.NewContainerDefinition(this, jsii.String("ContainerDef"), &ecs.ContainerDefinitionProps{
-		ContainerName: &props.Container.Name,
-		Essential:     jsii.Bool(props.Container.IsEssential),
+		ContainerName: &props.ContainerDetail.Name,
+		Essential:     jsii.Bool(props.ContainerDetail.IsEssential),
 		Image: ecs.AssetImage_FromEcrRepository(
 			ecr.Repository_FromRepositoryName(this, jsii.String("EcrRepo"), jsii.String(ecrImageNameTagSplit[0])), jsii.String(ecrImageNameTagSplit[1])),
 		TaskDefinition: fargateTaskDef,
