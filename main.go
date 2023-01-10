@@ -120,7 +120,8 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 			eventstargets.NewEcsTask(&eventstargets.EcsTaskProps{
 				Cluster: ecs.Cluster_FromClusterAttributes(this,
 					jsii.String("EcsTaskCluster"), &ecs.ClusterAttributes{
-						ClusterName: jsii.String(props.ClusterName),
+						ClusterName:    jsii.String(props.ClusterName),
+						SecurityGroups: &[]ec2.ISecurityGroup{},
 						Vpc: ec2.Vpc_FromLookup(this, jsii.String("ClusterVpc"), &ec2.VpcLookupOptions{
 							IsDefault: jsii.Bool(true),
 						}),
