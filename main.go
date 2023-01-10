@@ -80,7 +80,7 @@ func NewCronEcsFargateTask(scope constructs.Construct, id string, props *CronEcs
 		Cpu:            jsii.Number(props.Cpu),
 		MemoryLimitMiB: jsii.Number(props.MemoryInMiB),
 		RuntimePlatform: &ecs.RuntimePlatform{
-			CpuArchitecture:       ecs.CpuArchitecture_X86_64,
+			// CpuArchitecture:       ecs.CpuArchitecture_X86_64,
 			OperatingSystemFamily: ecs.OperatingSystemFamily_LINUX,
 		},
 		TaskRole: taskRole,
